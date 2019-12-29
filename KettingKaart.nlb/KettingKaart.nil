@@ -1,0 +1,35 @@
+#use "libs/strings"
+
+void Chainer(kth,gtl,string naar,string van)
+	CSayF("= Requested chain to '%s', from '%s'",naar,van)
+	gtl(naar,"From_"..van)
+end
+
+module m_KettingKaart
+	
+	delegate ZA_Enter
+	delegate GoToLayer
+	int TLen = 3
+	string prefix = "#"
+	
+	void CONSTRUCTOR()
+	end
+	
+	void Init(kth)
+		assert(self.ZA_Enter ,"You cannot init KettingKaart without setting KettingKaart.ZA_Enter to a delegate function << void(string,function) >> first")
+		assert(self.GoToLayer,"You cannot init KettingKaart without setting KettingKaart.GoToLayer to a delegate function << void(string,string) >> first")
+		var OldLay
+		OldLay = kth.Layer
+		for Lay in kth.EachLayer
+			CSayF("= Chains on Layer %s",Lay)
+			kth.Layer = Lay
+			for Tag in kth.EachTag(Lay)
+				if prefixed(Tag:upper(),"CHAIN_")
+					CSay("KettingKaart (On layer: "..Lay..": "..Tag.." => "..self.prefix..right(Tag,self.TLen).."."..right(Lay,self.TLen))
+					self.ZA_Enter(Tag,Chainer,kth,self.GoToLayer,self.prefix..right(Tag,self.TLen),right(Lay,self.TLen))
+				end
+			end
+		end
+	end
+
+end
